@@ -1,11 +1,18 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
+import * as path from "node:path";
+import * as url from "node:url";
 import { env } from "./config/env.js";
 import { logger } from "./config/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { router } from "./routes/index.js";
 
 const app = express();
+
+// ── Static frontend ───────────────────────────────────────────────────────────
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const webDir = path.resolve(__dirname, "../../../web");
+app.use(express.static(webDir));
 
 // ── Body parsing ──────────────────────────────────────────────────────────────
 app.use(express.json());

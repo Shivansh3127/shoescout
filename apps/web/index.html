@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShoeScout — Best Running Shoe Deals for Sanskar</title>
+  <meta name="description" content="ShoeScout finds the best running shoe deals across Amazon, Myntra, and Flipkart — with AI-powered recommendations that never leave your machine." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">👟</span>
+        <span class="logo-text">ShoeScout</span>
+        <span class="logo-badge">for Sanskar</span>
+      </div>
+      <p class="tagline">Best running shoe deals · AI-powered · Prices stay on your machine</p>
+    </div>
+  </header>
+
+  <!-- ── Search form ─────────────────────────────────────────────────────── -->
+  <main class="main">
+    <section class="search-section">
+      <div class="card search-card">
+        <h1 class="search-title">Find Your Next Running Shoe</h1>
+        <p class="search-subtitle">Sanskar's default: Nike Pegasus 41 · UK 9 · ₹10,000 budget</p>
+
+        <form id="search-form" class="search-form" novalidate>
+          <div class="form-row">
+            <div class="form-group form-group--wide">
+              <label for="query-input" class="form-label">Shoe name</label>
+              <input
+                id="query-input"
+                type="text"
+                class="form-input"
+                placeholder="e.g. Nike Air Zoom Pegasus 41"
+                value="Nike Air Zoom Pegasus 41"
+                required
+                minlength="2"
+              />
+            </div>
+            <div class="form-group">
+              <label for="size-input" class="form-label">UK size</label>
+              <input
+                id="size-input"
+                type="number"
+                class="form-input"
+                placeholder="9"
+                value="9"
+                min="1"
+                max="20"
+                step="0.5"
+              />
+            </div>
+            <div class="form-group">
+              <label for="budget-input" class="form-label">Budget (₹)</label>
+              <input
+                id="budget-input"
+                type="number"
+                class="form-input"
+                placeholder="10000"
+                value="10000"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="notes-input" class="form-label">Running notes <span class="label-optional">(optional)</span></label>
+            <textarea
+              id="notes-input"
+              class="form-input form-textarea"
+              placeholder="e.g. Road running 5km 3x/week, prefer neutral cushioning"
+            >Runs 5 km three times a week on roads. Prefers neutral cushioning.</textarea>
+          </div>
+
+          <button id="search-btn" type="submit" class="btn btn--primary">
+            <span class="btn-icon">🔍</span>
+            <span class="btn-text">Find Deals</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── Loading ─────────────────────────────────────────────────────── -->
+    <div id="loading" class="loading hidden" aria-live="polite">
+      <div class="spinner"></div>
+      <p class="loading-text">Searching across platforms…</p>
+      <p class="loading-sub">Gemma is analysing deals locally on your machine</p>
+    </div>
+
+    <!-- ── Error banner ────────────────────────────────────────────────── -->
+    <div id="error-banner" class="error-banner hidden" role="alert"></div>
+
+    <!-- ── Results ─────────────────────────────────────────────────────── -->
+    <section id="results" class="results hidden">
+
+      <!-- Gemma recommendation card -->
+      <div id="recommendation-card" class="card recommendation-card hidden">
+        <div class="recommendation-header">
+          <div class="ai-badge">
+            <span class="ai-dot"></span>
+            <span>Gemma AI · Local · Private</span>
+          </div>
+          <span id="rec-model" class="rec-model-tag"></span>
+        </div>
+        <div class="recommendation-body">
+          <div class="rec-pick-row">
+            <div>
+              <p class="rec-label">Recommended Buy</p>
+              <h2 id="rec-pick" class="rec-pick"></h2>
+            </div>
+            <div class="rec-price-block">
+              <p class="rec-price-label">Effective Price</p>
+              <p id="rec-price" class="rec-price"></p>
+            </div>
+          </div>
+          <ul id="rec-reasons" class="rec-list rec-list--green"></ul>
+          <ul id="rec-tradeoffs" class="rec-list rec-list--amber hidden"></ul>
+          <ul id="rec-caveats" class="rec-list rec-list--muted hidden"></ul>
+        </div>
+        <div id="guardrail-notice" class="guardrail-notice hidden">
+          ⚠️ AI output was validated and corrected by the guardrail
+        </div>
+        <div id="fallback-notice" class="fallback-notice hidden">
+          ℹ️ Recommendation generated by fallback logic (AI model unavailable)
+        </div>
+      </div>
+
+      <!-- Results meta -->
+      <div class="results-meta">
+        <p id="results-summary" class="results-summary"></p>
+        <div id="synthetic-banner" class="synthetic-banner hidden">
+          📊 Price history shown includes <strong>synthetic demo data</strong> (labelled in chart). Not real historical prices.
+        </div>
+      </div>
+
+      <!-- Offers table -->
+      <div class="card offers-card">
+        <h2 class="section-title">All Offers</h2>
+        <div class="table-wrapper">
+          <table id="offers-table" class="offers-table">
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Title</th>
+                <th class="num-col">Price</th>
+                <th class="num-col">Shipping</th>
+                <th class="num-col">Discount</th>
+                <th class="num-col">Effective ↑</th>
+                <th>Deal</th>
+                <th>Stock</th>
+                <th>History</th>
+              </tr>
+            </thead>
+            <tbody id="offers-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Price history chart (lazy loaded) -->
+      <div id="chart-section" class="card chart-card hidden">
+        <div class="chart-header">
+          <h2 id="chart-title" class="section-title"></h2>
+          <button id="chart-close" class="btn btn--ghost btn--sm">✕ Close</button>
+        </div>
+        <div class="chart-container">
+          <canvas id="price-chart"></canvas>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Built for Sanskar · <a href="https://dev.to/challenges/hacktoberfest-weekend-2026-10-01" target="_blank" rel="noopener">Hacktoberfest Weekend Challenge 2026</a></p>
+    <p class="footer-note">Gemma runs locally — Sanskar's preferences never leave this machine. Prices from SerpApi / Google Shopping. Historical data may include synthetic demo rows.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
