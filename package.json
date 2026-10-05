@@ -1,0 +1,21 @@
+{
+  "name": "shoescout",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deal finder built for Sanskar — open-weight AI at the core.",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "dev:api": "pnpm --filter @shoescout/api dev",
+    "dev:web": "pnpm --filter @shoescout/web dev",
+    "build": "pnpm --filter @shoescout/api build && pnpm --filter @shoescout/web build",
+    "test": "pnpm --filter @shoescout/api test",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

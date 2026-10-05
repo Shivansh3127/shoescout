@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: shoescout-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    plan: starter          # upgrade to standard for more RAM
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: shoescout-db
+          property: connectionString
+      - key: SERPAPI_KEY
+        sync: false        # set manually in Render dashboard
+      - key: OLLAMA_BASE_URL
+        sync: false        # set to wherever Ollama is running (see Phase 8 options)
+      - key: OLLAMA_MODEL
+        value: gemma3:4b
+      - key: OLLAMA_EMBED_MODEL
+        value: nomic-embed-text
+      - key: TABPFN_SERVICE_URL
+        sync: false
+      - key: RATE_LIMIT_RPM
+        value: "30"
+
+databases:
+  - name: shoescout-db
+    databaseName: shoescout
+    plan: starter
