@@ -1,0 +1,93 @@
+{
+  "search_metadata": {
+    "id": "fixture_001",
+    "status": "Success",
+    "created_at": "2026-10-05T07:00:00Z"
+  },
+  "search_parameters": {
+    "engine": "google_shopping",
+    "q": "Nike Air Zoom Pegasus 41 UK size 9",
+    "gl": "in",
+    "hl": "en"
+  },
+  "shopping_results": [
+    {
+      "position": 1,
+      "title": "Nike Air Zoom Pegasus 41 Men's Road Running Shoes UK 9",
+      "link": "https://www.amazon.in/dp/B0CX1234AB",
+      "source": "Amazon IN",
+      "price": "₹9,499",
+      "extracted_price": 9499.0,
+      "old_price": "₹10,995",
+      "extracted_old_price": 10995.0,
+      "delivery": "FREE delivery",
+      "rating": 4.3,
+      "reviews": 1842,
+      "thumbnail": "https://m.media-amazon.com/images/I/sample.jpg"
+    },
+    {
+      "position": 2,
+      "title": "Nike Air Zoom Pegasus 41 Men's Running Shoe - Size 9 UK",
+      "link": "https://www.myntra.com/shoes/nike/12345678",
+      "source": "Myntra",
+      "price": "₹7,999",
+      "extracted_price": 7999.0,
+      "old_price": "₹10,995",
+      "extracted_old_price": 10995.0,
+      "delivery": "FREE delivery on orders above ₹799",
+      "rating": 4.5,
+      "reviews": 3201,
+      "thumbnail": "https://assets.myntassets.com/sample.jpg"
+    },
+    {
+      "position": 3,
+      "title": "Nike Pegasus 41 Road Running Shoes Men (UK 9)",
+      "link": "https://www.flipkart.com/nike-pegasus-41/p/itmxyz",
+      "source": "Flipkart",
+      "price": "₹9,299",
+      "extracted_price": 9299.0,
+      "delivery": "₹49 delivery",
+      "rating": 4.2,
+      "reviews": 956,
+      "thumbnail": "https://rukminim1.flixcart.com/sample.jpg"
+    },
+    {
+      "position": 4,
+      "title": "Nike Air Zoom Pegasus 41 Running Shoe",
+      "link": "https://www.nike.com/in/t/pegasus-41",
+      "source": "Nike",
+      "price": "₹10,995",
+      "extracted_price": 10995.0,
+      "delivery": "FREE delivery",
+      "rating": 4.6,
+      "reviews": 5120,
+      "thumbnail": "https://static.nike.com/sample.jpg"
+    },
+    {
+      "position": 5,
+      "title": "ADIDAS Ultraboost 22 Men Running Shoes UK Size 9",
+      "link": "https://www.amazon.in/dp/B0CX9999ZZ",
+      "source": "Amazon IN",
+      "price": "₹8,499",
+      "extracted_price": 8499.0,
+      "old_price": "₹11,999",
+      "extracted_old_price": 11999.0,
+      "delivery": "FREE delivery",
+      "rating": 4.1,
+      "reviews": 672,
+      "thumbnail": "https://m.media-amazon.com/images/I/sample2.jpg"
+    },
+    {
+      "position": 6,
+      "title": "Out of Stock - Nike Pegasus 41 Size 9 UK Black",
+      "link": "https://www.tatacliq.com/nike-pegasus-41",
+      "source": "Tata CLiQ",
+      "price": "₹9,799",
+      "extracted_price": 9799.0,
+      "delivery": "Out of stock",
+      "rating": 4.0,
+      "reviews": 88,
+      "thumbnail": "https://tatacliq.com/sample.jpg"
+    }
+  ]
+}
