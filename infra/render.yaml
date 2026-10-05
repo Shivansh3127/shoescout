@@ -4,26 +4,47 @@ services:
     runtime: docker
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: .
-    plan: starter          # upgrade to standard for more RAM
+    plan: starter          # upgrade to standard for more RAM / faster Gemma
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
+
+      # ── Database ──────────────────────────────────────────────────────────
       - key: DATABASE_URL
         fromDatabase:
           name: shoescout-db
           property: connectionString
+
+      # ── SerpApi ───────────────────────────────────────────────────────────
       - key: SERPAPI_KEY
-        sync: false        # set manually in Render dashboard
+        sync: false          # set manually in Render dashboard
+      - key: SERPAPI_FIXTURE_MODE
+        value: "false"       # flip to "true" for cost-free demo
+
+      # ── Ollama / Gemma ────────────────────────────────────────────────────
+      # Option A (recommended for demo): point to a self-hosted Ollama instance
+      # Option B: use ngrok tunnel from your local machine
       - key: OLLAMA_BASE_URL
-        sync: false        # set to wherever Ollama is running (see Phase 8 options)
+        sync: false          # set manually — e.g. https://your-ollama.example.com
       - key: OLLAMA_MODEL
         value: gemma3:4b
       - key: OLLAMA_EMBED_MODEL
         value: nomic-embed-text
-      - key: TABPFN_SERVICE_URL
-        sync: false
+
+      # ── Rate limiting ─────────────────────────────────────────────────────
       - key: RATE_LIMIT_RPM
         value: "30"
+
+      # ── Friend profile (Sanskar) ──────────────────────────────────────────
+      - key: FRIEND_NAME
+        value: Sanskar
+      - key: FRIEND_DEFAULT_BUDGET
+        value: "10000"
+      - key: FRIEND_DEFAULT_SIZE
+        value: "9"
+      - key: FRIEND_USAGE_NOTES
+        value: "Runs 5 km three times a week on roads. Prefers neutral cushioning."
 
 databases:
   - name: shoescout-db
