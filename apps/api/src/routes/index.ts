@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { healthRouter } from "./health.js";
+import { searchRouter } from "./search.js";
+import { productsRouter } from "./products.js";
 
 export const router = Router();
 
-// GET /health
-router.use("/health", healthRouter);
-
-// Phase 1+ routes will be mounted here:
-// router.use("/search",   searchRouter);
-// router.use("/products", productsRouter);
+router.use("/health",   healthRouter);
+router.use("/search",   searchRouter);
+router.use("/products", productsRouter);
