@@ -11,7 +11,7 @@ const app = express();
 
 // ── Static frontend ───────────────────────────────────────────────────────────
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const webDir = path.resolve(__dirname, "../../../web");
+const webDir = path.resolve(__dirname, "../../web");
 app.use(express.static(webDir));
 
 // ── Body parsing ──────────────────────────────────────────────────────────────

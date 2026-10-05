@@ -229,6 +229,7 @@ async function handleSearch(e) {
   clearError();
 
   const query  = document.getElementById("query-input").value.trim();
+  const gender = document.getElementById("gender-input").value || "men";
   const size   = parseFloat(document.getElementById("size-input").value) || undefined;
   const budget = parseFloat(document.getElementById("budget-input").value) || undefined;
   const notes  = document.getElementById("notes-input").value.trim() || undefined;
@@ -248,7 +249,7 @@ async function handleSearch(e) {
     const res = await fetch(`${API_BASE}/search`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query, size, budget, notes }),
+      body: JSON.stringify({ query, gender, size, budget, notes }),
     });
 
     const data = await res.json();

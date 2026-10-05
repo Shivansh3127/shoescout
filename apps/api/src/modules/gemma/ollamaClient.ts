@@ -33,7 +33,7 @@ export interface GemmaCallResult {
  */
 export async function callGemma(
   messages: OllamaChatMessage[],
-  timeoutMs = 60_000
+  timeoutMs = 90_000
 ): Promise<GemmaCallResult> {
   const start = Date.now();
 

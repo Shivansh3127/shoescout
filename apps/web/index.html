@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ShoeScout — Best Running Shoe Deals for Sanskar</title>
-  <meta name="description" content="ShoeScout finds the best running shoe deals across Amazon, Myntra, and Flipkart — with AI-powered recommendations that never leave your machine." />
+  <title>ShoeScout — Best Running Shoe Deals in India</title>
+  <meta name="description" content="ShoeScout finds the best running shoe deals across Amazon, Myntra, Flipkart, Nike and more — with AI-powered recommendations that never leave your machine." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -18,7 +18,7 @@
       <div class="logo">
         <span class="logo-icon">👟</span>
         <span class="logo-text">ShoeScout</span>
-        <span class="logo-badge">for Sanskar</span>
+        <span class="logo-badge">India</span>
       </div>
       <p class="tagline">Best running shoe deals · AI-powered · Prices stay on your machine</p>
     </div>
@@ -29,30 +29,80 @@
     <section class="search-section">
       <div class="card search-card">
         <h1 class="search-title">Find Your Next Running Shoe</h1>
-        <p class="search-subtitle">Sanskar's default: Nike Pegasus 41 · UK 9 · ₹10,000 budget</p>
+        <p class="search-subtitle">Search across Amazon IN, Myntra, Flipkart, Nike, Adidas &amp; more</p>
 
         <form id="search-form" class="search-form" novalidate>
+          <!-- Shoe name with datalist autocomplete -->
+          <div class="form-group form-group--full">
+            <label for="query-input" class="form-label">Shoe Name</label>
+            <input
+              id="query-input"
+              type="text"
+              class="form-input"
+              placeholder="e.g. Nike Air Zoom Pegasus 41"
+              list="shoe-suggestions"
+              autocomplete="off"
+              required
+              minlength="2"
+            />
+            <datalist id="shoe-suggestions">
+              <!-- Nike -->
+              <option value="Nike Air Zoom Pegasus 41"></option>
+              <option value="Nike Air Zoom Pegasus 40"></option>
+              <option value="Nike React Infinity Run 4"></option>
+              <option value="Nike Invincible 3"></option>
+              <option value="Nike Structure 25"></option>
+              <option value="Nike Vomero 17"></option>
+              <option value="Nike Free Run 5.0"></option>
+              <!-- Adidas -->
+              <option value="Adidas Ultraboost 22"></option>
+              <option value="Adidas Ultraboost 23"></option>
+              <option value="Adidas Solarboost 5"></option>
+              <option value="Adidas Supernova Rise"></option>
+              <option value="Adidas Adizero Boston 12"></option>
+              <!-- ASICS -->
+              <option value="ASICS Gel Nimbus 26"></option>
+              <option value="ASICS Gel Nimbus 27"></option>
+              <option value="ASICS Gel Kayano 31"></option>
+              <option value="ASICS Gel Cumulus 26"></option>
+              <option value="ASICS GT 2000 13"></option>
+              <option value="ASICS Gel DS Trainer 28"></option>
+              <!-- Brooks -->
+              <option value="Brooks Ghost 16"></option>
+              <option value="Brooks Adrenaline GTS 24"></option>
+              <!-- New Balance -->
+              <option value="New Balance Fresh Foam 1080 v13"></option>
+              <option value="New Balance Fresh Foam 880 v14"></option>
+              <!-- Saucony -->
+              <option value="Saucony Ride 17"></option>
+              <option value="Saucony Guide 17"></option>
+              <!-- Hoka -->
+              <option value="Hoka Clifton 9"></option>
+              <option value="Hoka Bondi 8"></option>
+              <!-- Puma -->
+              <option value="Puma Nitro Elite 3"></option>
+              <option value="Puma Velocity Nitro 3"></option>
+              <!-- Skechers -->
+              <option value="Skechers GoRun Razor 5"></option>
+            </datalist>
+          </div>
+
           <div class="form-row">
-            <div class="form-group form-group--wide">
-              <label for="query-input" class="form-label">Shoe name</label>
-              <input
-                id="query-input"
-                type="text"
-                class="form-input"
-                placeholder="e.g. Nike Air Zoom Pegasus 41"
-                value="Nike Air Zoom Pegasus 41"
-                required
-                minlength="2"
-              />
+            <div class="form-group">
+              <label for="gender-input" class="form-label">Gender</label>
+              <select id="gender-input" class="form-input form-select">
+                <option value="men">Men</option>
+                <option value="women">Women</option>
+                <option value="unisex">Unisex</option>
+              </select>
             </div>
             <div class="form-group">
-              <label for="size-input" class="form-label">UK size</label>
+              <label for="size-input" class="form-label">UK Size</label>
               <input
                 id="size-input"
                 type="number"
                 class="form-input"
                 placeholder="9"
-                value="9"
                 min="1"
                 max="20"
                 step="0.5"
@@ -65,19 +115,18 @@
                 type="number"
                 class="form-input"
                 placeholder="10000"
-                value="10000"
                 min="0"
               />
             </div>
           </div>
 
           <div class="form-group">
-            <label for="notes-input" class="form-label">Running notes <span class="label-optional">(optional)</span></label>
+            <label for="notes-input" class="form-label">Running Notes <span class="label-optional">(optional)</span></label>
             <textarea
               id="notes-input"
               class="form-input form-textarea"
               placeholder="e.g. Road running 5km 3x/week, prefer neutral cushioning"
-            >Runs 5 km three times a week on roads. Prefers neutral cushioning.</textarea>
+            ></textarea>
           </div>
 
           <button id="search-btn" type="submit" class="btn btn--primary">
@@ -91,7 +140,7 @@
     <!-- ── Loading ─────────────────────────────────────────────────────── -->
     <div id="loading" class="loading hidden" aria-live="polite">
       <div class="spinner"></div>
-      <p class="loading-text">Searching across platforms…</p>
+      <p class="loading-text">Searching across verified platforms…</p>
       <p class="loading-sub">Gemma is analysing deals locally on your machine</p>
     </div>
 
@@ -179,8 +228,8 @@
   </main>
 
   <footer class="footer">
-    <p>Built for Sanskar · <a href="https://dev.to/challenges/hacktoberfest-weekend-2026-10-01" target="_blank" rel="noopener">Hacktoberfest Weekend Challenge 2026</a></p>
-    <p class="footer-note">Gemma runs locally — Sanskar's preferences never leave this machine. Prices from SerpApi / Google Shopping. Historical data may include synthetic demo rows.</p>
+    <p>ShoeScout · <a href="https://dev.to/challenges/hacktoberfest-weekend-2026-10-01" target="_blank" rel="noopener">Hacktoberfest Weekend Challenge 2026</a></p>
+    <p class="footer-note">Gemma runs locally — your preferences never leave this machine. Prices from verified Indian retail platforms only.</p>
   </footer>
 
   <script src="app.js"></script>

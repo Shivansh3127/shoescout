@@ -39,6 +39,37 @@ export interface NormalizedOffer {
 
 const OUT_OF_STOCK_SIGNALS = ["out of stock", "unavailable", "sold out", "not available"];
 
+/**
+ * Verified Indian retail platforms — only these pass through.
+ * Keyed on substrings that appear in SerpApi's `source` field.
+ */
+const TRUSTED_PLATFORMS: readonly string[] = [
+  "amazon",
+  "myntra",
+  "flipkart",
+  "nike",
+  "adidas",
+  "asics",
+  "puma",
+  "new balance",
+  "newbalance",
+  "tata cliq",
+  "tatacliq",
+  "skechers",
+  "hoka",
+  "brooks",
+  "saucony",
+  "crocs",
+  "reebok",
+  "under armour",
+  "decathlon",
+];
+
+function isTrustedPlatform(source: string): boolean {
+  const lower = source.toLowerCase();
+  return TRUSTED_PLATFORMS.some((p) => lower.includes(p));
+}
+
 function isOutOfStock(result: SerpApiShoppingResult): boolean {
   const combined = [result.delivery ?? "", result.title].join(" ").toLowerCase();
   return OUT_OF_STOCK_SIGNALS.some((s) => combined.includes(s));
@@ -91,6 +122,13 @@ export function normalizeResults(
         rawPrice: result.price,
         source: result.source,
       });
+      skipped++;
+      continue;
+    }
+
+    // ── Trusted platform filter ────────────────────────────────────────────
+    if (!isTrustedPlatform(result.source)) {
+      logger.debug("Normalizer: skipping untrusted platform", { source: result.source });
       skipped++;
       continue;
     }

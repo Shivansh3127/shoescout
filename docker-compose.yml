@@ -1,8 +1,8 @@
-version: "3.9"
+
 
 services:
   postgres:
-    image: timescale/timescaledb-ha:pg16-latest   # includes pgvector + TimescaleDB
+    image: timescale/timescaledb:latest-pg16   # includes TimescaleDB + pgvector
     container_name: shoescout_postgres
     environment:
       POSTGRES_DB: shoescout

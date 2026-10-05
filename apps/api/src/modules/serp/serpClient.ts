@@ -23,7 +23,7 @@ const cache = new NodeCache({ stdTTL: env.SERPAPI_CACHE_TTL_SECONDS, checkperiod
 
 // ── Fixture helpers ───────────────────────────────────────────────────────────
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const FIXTURE_DIR = path.resolve(__dirname, "../../../../tests/fixtures");
+const FIXTURE_DIR = path.resolve(__dirname, "../../../tests/fixtures");
 
 function queryToSlug(q: string): string {
   return q.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 60);
