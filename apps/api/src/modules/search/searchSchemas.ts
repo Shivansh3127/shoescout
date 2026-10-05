@@ -19,6 +19,10 @@ export const SearchRequestSchema = z.object({
     .string()
     .max(500, "Notes too long")
     .optional(),
+  gender: z
+    .enum(["men", "women", "unisex"])
+    .optional()
+    .default("men"),
 });
 
 export type SearchRequest = z.infer<typeof SearchRequestSchema>;

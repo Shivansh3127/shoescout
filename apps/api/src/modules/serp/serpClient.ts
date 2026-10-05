@@ -99,10 +99,15 @@ export interface SearchOptions {
   query: string;
   /** If provided, appended to query for more targeted results */
   size?: number;
+  /** men | women | unisex — appended to query */
+  gender?: string;
 }
 
 export async function searchShoes(opts: SearchOptions): Promise<SerpApiShoppingResult[]> {
-  const q = opts.size ? `${opts.query} UK size ${opts.size}` : opts.query;
+  const parts = [opts.query];
+  if (opts.gender && opts.gender !== "unisex") parts.push(opts.gender);
+  if (opts.size) parts.push(`UK size ${opts.size}`);
+  const q = parts.join(" ");
   const cacheKey = `serp:${q}`;
 
   // 1. Cache hit

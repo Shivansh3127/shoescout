@@ -43,7 +43,7 @@ export async function runSearch(req: SearchRequest): Promise<SearchResponse> {
   const startMs = Date.now();
 
   // 1. Fetch from SerpApi (cache-backed or fixture)
-  const rawResults = await searchShoes({ query: req.query, size: req.size });
+  const rawResults = await searchShoes({ query: req.query, size: req.size, gender: req.gender });
 
   // 2. Normalize: effective_price = price + shipping - discount
   const normalized = normalizeResults(rawResults, { requestedSize: req.size });
