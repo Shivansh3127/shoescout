@@ -1,174 +1,198 @@
 # 👟 ShoeScout
 
-> **Built for Sanskar** — finds the best running shoe deals across Amazon IN, Myntra, Flipkart, and Nike.in, then uses a locally-running Gemma model to explain *why* a price is good and *which* one to buy.
+> **AI-powered running shoe price tracker for India.**  
+> Find the best deals across Amazon IN, Myntra, Flipkart, Nike, Adidas, ASICS and more — with local Gemma AI recommendations that never leave your machine.
 
-Built for the [DEV Hacktoberfest Weekend Challenge 2026](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01): *Build for a Friend*.
-
----
-
-## The problem Sanskar had
-
-Sanskar runs 5 km on roads, three times a week. He wears **Nike Pegasus 41, UK 9**. He knows the shoe he wants — but he kept buying it at ₹10,995 on Nike.in while Myntra had it for ₹7,999 the same week. He just never checked multiple sites at once.
-
-ShoeScout fixes that: one search, all platforms, ranked by *effective price* (price + shipping − discount), with an AI recommendation that never leaves his machine.
+[![Built for Hacktoberfest Weekend Challenge 2026](https://img.shields.io/badge/Hacktoberfest-Weekend%20Challenge%202026-orange)](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
-## Architecture
+## ✨ Features
+
+- 🔍 **Live price search** — queries Google Shopping via SerpApi across trusted Indian platforms only
+- 🤖 **Local Gemma AI** — deal recommendations run entirely on your machine via Ollama (no data sent to the cloud)
+- 💯 **Deal scoring** — additive 0–10 score based on discount, platform reputation, price history, and stock
+- 📊 **Price history charts** — 45-day trend charts per product stored in TimescaleDB
+- 🛡️ **Trusted platforms only** — Amazon IN, Myntra, Flipkart, Nike, Adidas, ASICS, Puma, New Balance, TataCliq, Skechers, Hoka, Brooks, Saucony, Reebok, Decathlon
+- 🚻 **Gender-aware search** — Men / Women / Unisex filtering baked into the query
+- 🌑 **Dark mode SPA** — Chart.js price history, deal badges, effective price sorting
+
+---
+
+## 🖥️ Demo (Fixture Mode — no API key needed)
 
 ```
-Browser (http://localhost:3000)
-    │
-    ▼
-Express API (/search  /products/:id/history  /health)
-    │
-    ├── SerpApi (Google Shopping)   ← external, cached 10 min, fixture mode for dev
-    │       ↓
-    │   Normalizer (₹ parser, shipping, discount)
-    │       ↓
-    │   Matcher (rule-based → pgvector cosine fallback)
-    │       ↓
-    │   Deal Scorer (vs 30d avg, vs 30d low, discount%, stock)
-    │       ↓
-    ├── Gemma 3 4B via Ollama       ← runs LOCAL, Sanskar's data never leaves machine
-    │   ├── Structured JSON prompt  ← no free text → no hallucinated prices
-    │   ├── Guardrail validation    ← rejects fabricated platforms / prices
-    │   └── Retry → deterministic fallback
-    │
-    └── TimescaleDB (Postgres)      ← price history hypertable + pgvector
+# In fixture mode the app uses demo data — no SerpApi quota burned
+$env:SERPAPI_FIXTURE_MODE="true"
+$env:DATABASE_URL="postgresql://shoescout:changeme@localhost:5432/shoescout"
+$env:SERPAPI_KEY="dummy"
+$env:OLLAMA_BASE_URL="http://localhost:11434"
+$env:OLLAMA_MODEL="gemma3:1b"
+pnpm --filter @shoescout/api dev
 ```
 
----
-
-## Why Gemma? (challenge requirement)
-
-- **Open-weight model** — Gemma 3 4B runs via Ollama on your own hardware
-- **Genuinely needed** — the recommendation reasoning (why this price, vs 30-day average, tradeoffs) is the core value-add
-- **Privacy first** — Sanskar's shoe size, budget, and usage pattern never hit a cloud API
-- **Guardrail layer** — the app validates every number and platform name Gemma returns against the input data; hallucinated prices are caught and rejected before the user sees them
+Open **http://localhost:3000**
 
 ---
 
-## Quick start (local)
+## 🚀 Quick Start
 
 ### Prerequisites
-- Docker Desktop
-- Node.js 20+ and pnpm (`npm i -g pnpm`)
-- A free [SerpApi key](https://serpapi.com) (100 searches/month free) — or use fixture mode below
+
+| Tool | Version | Purpose |
+|---|---|---|
+| Node.js | ≥ 20 | Runtime |
+| pnpm | ≥ 9 | Package manager |
+| Docker | any | TimescaleDB |
+| Ollama | any | Local Gemma AI |
+
+### 1. Clone & install
 
 ```bash
-git clone https://github.com/YOUR_USER/shoescout.git
+git clone https://github.com/YOUR_USERNAME/shoescout.git
 cd shoescout
-
-# 1. Environment
-cp .env.example .env
-# Edit .env — set DATABASE_URL and SERPAPI_KEY (see below for fixture mode)
-
-# 2. Start Postgres + Ollama
-docker compose up -d
-
-# 3. Pull models (~2 GB first time)
-docker exec shoescout-ollama ollama pull gemma3:4b
-docker exec shoescout-ollama ollama pull nomic-embed-text
-
-# 4. Run DB migrations
-pnpm migrate
-
-# 5. Install deps
 pnpm install
-
-# 6. Start the API (serves frontend too)
-pnpm dev:api
 ```
 
-Open **http://localhost:3000** — ShoeScout loads with Sanskar's defaults pre-filled.
-
-### No SerpApi key? Use fixture mode
+### 2. Start the database
 
 ```bash
-SERPAPI_FIXTURE_MODE=true pnpm dev:api
+docker compose up -d
 ```
 
-Fixture mode replays a realistic 6-offer sample (Amazon IN / Myntra / Flipkart / Nike.in / TataCliq) — all API calls, normalization, matching, deal scoring, and Gemma recommendation work exactly the same.
+Then run migrations:
+```bash
+docker cp apps/api/db/migrations/001_init.sql shoescout_db:/tmp/
+docker exec -it shoescout_db psql -U shoescout -d shoescout -f /tmp/001_init.sql
+```
 
----
-
-## Running tests
+### 3. Pull Gemma (local AI)
 
 ```bash
-pnpm --filter @shoescout/api test
-# 59 tests passing across:
-#   priceParser  (24) — ₹/INR/Rs. parsing, edge cases
-#   normalizer   (11) — effective price, sorting, bad data skipping
-#   searchLogic  (7)  — budget filter, discount ranking, response shape
-#   dealScore    (8)  — component scoring, no-history fallback
-#   guardrail    (9)  — JSON parsing, platform/price hallucination detection
+# Fast on CPU (~800 MB)
+ollama pull gemma3:1b
+
+# Or higher quality, slower (~3 GB)
+ollama pull gemma3:4b
+```
+
+### 4. Get a SerpApi key (free — 100 searches/month)
+
+Sign up at **https://serpapi.com** → copy your API key.
+
+### 5. Start the API
+
+```powershell
+# Windows PowerShell
+$env:SERPAPI_FIXTURE_MODE="false"
+$env:DATABASE_URL="postgresql://shoescout:changeme@localhost:5432/shoescout"
+$env:SERPAPI_KEY="your_serpapi_key_here"
+$env:OLLAMA_BASE_URL="http://localhost:11434"
+$env:OLLAMA_MODEL="gemma3:1b"
+pnpm --filter @shoescout/api dev
+```
+
+```bash
+# Linux / macOS
+SERPAPI_FIXTURE_MODE=false \
+DATABASE_URL=postgresql://shoescout:changeme@localhost:5432/shoescout \
+SERPAPI_KEY=your_serpapi_key_here \
+OLLAMA_BASE_URL=http://localhost:11434 \
+OLLAMA_MODEL=gemma3:1b \
+pnpm --filter @shoescout/api dev
+```
+
+Open **http://localhost:3000** → search for any running shoe.
+
+---
+
+## 🏗️ Architecture
+
+```
+Browser (SPA)
+    │  POST /search
+    ▼
+Express API (port 3000)
+    ├── SerpApi Client      — Google Shopping, 10-min cache, 3 retries
+    ├── Normalizer          — effective_price, trusted-platform filter
+    ├── Product Matcher     — rule → vector → new
+    ├── Deal Scorer         — additive 0–10 score
+    ├── Gemma Service       — local Ollama prompt + guardrail
+    └── TimescaleDB         — price history (45-day window)
+```
+
+### Trusted Platform Filter
+
+Only results from verified Indian retailers are shown:
+
+> Amazon IN · Myntra · Flipkart · Nike · Adidas · ASICS · Puma · New Balance · TataCliq · Skechers · Hoka · Brooks · Saucony · Reebok · Under Armour · Decathlon
+
+Random or unknown sources are silently dropped.
+
+---
+
+## 🔑 Environment Variables
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `DATABASE_URL` | ✅ | — | PostgreSQL / TimescaleDB connection string |
+| `SERPAPI_KEY` | ✅ (live mode) | — | Your SerpApi key |
+| `SERPAPI_FIXTURE_MODE` | ❌ | `false` | `true` = use demo fixture data |
+| `OLLAMA_BASE_URL` | ❌ | `http://localhost:11434` | Ollama server URL |
+| `OLLAMA_MODEL` | ❌ | `gemma3:4b` | Model to use (recommend `gemma3:1b` on CPU) |
+| `PORT` | ❌ | `3000` | API server port |
+| `LOG_LEVEL` | ❌ | `info` | Pino log level |
+
+---
+
+## 🧪 Testing
+
+```bash
+pnpm test                  # all tests
+pnpm --filter @shoescout/api test --coverage
 ```
 
 ---
 
-## Deploying to Render
-
-The `infra/render.yaml` blueprint configures:
-- **Web service** — Docker, `shoescout-api`, auto-deploys from main
-- **Database** — Postgres (Render managed), injected via `DATABASE_URL`
-
-Steps:
-1. Push to GitHub
-2. Go to [Render Dashboard](https://dashboard.render.com) → **New → Blueprint**
-3. Point to this repo — Render reads `infra/render.yaml` automatically
-4. Set the two manual env vars in the dashboard:
-   - `SERPAPI_KEY` — your SerpApi key
-   - `OLLAMA_BASE_URL` — URL to a running Ollama instance (see note below)
-
-> **Note on Ollama hosting**: Render's starter plan can't run Gemma locally. Options for the demo:
-> - Run Ollama on your laptop and expose it via [ngrok](https://ngrok.com): `ngrok http 11434`
-> - Deploy Ollama to a $5/mo DigitalOcean droplet
-> - Set `SERPAPI_FIXTURE_MODE=true` — Gemma still runs, just SerpApi is mocked
-
----
-
-## Project structure
+## 📁 Project Structure
 
 ```
 shoescout/
 ├── apps/
-│   ├── api/                   # Express + TypeScript
+│   ├── api/               # Express API + all modules
 │   │   ├── src/
-│   │   │   ├── config/        # env validation (Zod)
-│   │   │   ├── db/
-│   │   │   │   └── queries/   # priceHistory, products
 │   │   │   ├── modules/
-│   │   │   │   ├── serp/      # SerpApi client + types
-│   │   │   │   ├── normalizer/# price parser + normalizer
-│   │   │   │   ├── matcher/   # rule-based + pgvector matcher
-│   │   │   │   ├── intelligence/ # deal scorer (0-10)
-│   │   │   │   ├── gemma/     # Ollama client, prompt, guardrail
-│   │   │   │   └── search/    # orchestrator + Zod schemas
-│   │   │   └── routes/        # /search /products /health
-│   │   └── tests/unit/        # 59 Vitest tests
-│   └── web/                   # Vanilla HTML + CSS + JS frontend
-├── db/migrations/             # TimescaleDB schema + seed
-├── docker-compose.yml         # Postgres/TimescaleDB + Ollama
-└── infra/render.yaml          # Render deploy blueprint
+│   │   │   │   ├── serp/          # SerpApi client
+│   │   │   │   ├── normalizer/    # Price normalizer + platform filter
+│   │   │   │   ├── matcher/       # Product matching
+│   │   │   │   ├── intelligence/  # Deal scoring
+│   │   │   │   ├── gemma/         # Ollama / Gemma integration
+│   │   │   │   └── search/        # Orchestration service + schema
+│   │   │   └── db/                # TimescaleDB queries + migrations
+│   │   └── tests/fixtures/        # Demo fixture JSON
+│   └── web/               # Static SPA (HTML + CSS + JS)
+├── infra/
+│   └── render.yaml        # Render.com deploy blueprint
+└── docker-compose.yml     # Local TimescaleDB
 ```
 
 ---
 
-## Data disclosure
+## 🚢 Deploy to Render
 
-Any price history rows seeded during development have `is_seeded = TRUE` in the database. The API surfaces this in `GET /products/:id/history` as a `dataDisclosure` field, and the frontend shows a banner: *"Some data is synthetic — for demo purposes only."*
-
-No real historical price data is claimed unless gathered by a live SerpApi call (`is_seeded = FALSE`).
-
----
-
-## What's next (post-challenge)
-
-- **Phase 4 — TabPFN forecast**: integrate the TabPFN FastAPI microservice for price-drop prediction (already scaffolded at `TABPFN_SERVICE_URL`)
-- **Phase 6 — Alerts**: email/WhatsApp notification when the price drops below a threshold
-- **Gemma 3 27B**: drop-in swap — change `OLLAMA_MODEL=gemma3:27b`, same code
+1. Fork this repo
+2. Sign up at **https://render.com**
+3. New → Blueprint → point to this repo
+4. Set environment variables in the Render dashboard
+5. Deploy ✅
 
 ---
 
-*Made with ❤️ for Sanskar. Hacktoberfest Weekend Challenge 2026.*
+## 📄 License
+
+MIT — see [LICENSE](LICENSE)
+
+---
+
+*Built for the [Hacktoberfest Weekend Challenge 2026](https://dev.to/challenges/hacktoberfest-weekend-2026-10-01)*
